@@ -254,11 +254,11 @@ export async function delItem(formData: FormData) {
        success_url:
          process.env.NODE_ENV === "development"
            ? "http://localhost:3000/payment/success"
-           : "https://shoe-marshal.vercel.app/payment/success",
+           : "#/payment/success",
        cancel_url:
          process.env.NODE_ENV === "development"
            ? "http://localhost:3000/payment/cancel"
-           : "https://shoe-marshal.vercel.app/payment/cancel",
+           : "#/checkout",
        metadata: {
          userId: user.id,
        },
