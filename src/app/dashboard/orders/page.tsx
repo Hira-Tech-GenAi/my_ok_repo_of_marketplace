@@ -7,8 +7,9 @@ import {
 } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
-
+import { unstable_noStore as noStore } from "next/cache";
 async function getData() {
+ 
   const data = await prisma.order.findMany({
     select: {
       amount: true,
@@ -32,6 +33,7 @@ async function getData() {
 }
 
 export default async function OrdersPage() {
+   noStore();
   const data = await getData();
   return (
     <Card>

@@ -1,7 +1,3 @@
-
-
-
-
 import { Chart } from "@/components/dashboard/Chart";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import RecentSales from "@/components/dashboard/RecentSales";
@@ -15,17 +11,16 @@ import {
 import { prisma } from "@/lib/db";
 
 import React from "react";
-
+import { unstable_noStore as noStore } from "next/cache";
 async function getData() {
-  const now =new Date();
+  const now = new Date();
   const lastWeek = new Date();
   lastWeek.setDate(now.getDate() - 7);
   const data = await prisma.order.findMany({
     where: {
       createdAt: {
-        gte: lastWeek
-      }
-      
+        gte: lastWeek,
+      },
     },
     select: {
       amount: true,
@@ -42,8 +37,9 @@ async function getData() {
   return result;
 }
 
-const DashBoard = async() => {
-  const data =await getData();
+const DashBoard = async () => {
+  noStore();
+  const data = await getData();
   return (
     <>
       <DashboardStats />

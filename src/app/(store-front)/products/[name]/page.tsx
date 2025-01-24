@@ -4,6 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { ProductCard } from "@/components/store-front/ProductCard";
 import { prisma } from "@/lib/db";
 
+
 async function getData(productCategory: string) {
   switch (productCategory) {
     case "all": {
