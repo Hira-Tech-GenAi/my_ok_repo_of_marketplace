@@ -14,7 +14,7 @@ import { redis } from "@/lib/redis";
 import { Cart } from "@/lib/interfaces";
 
 import { Button } from "@/components/ui/button";
-import { CheckOutButton, DeleteItem } from "@/components/SubmitButton";
+import {  CheckoutButton, DeleteItem } from "@/components/SubmitButton";
 
 export default async function BagRoute() {
   noStore();
@@ -88,7 +88,7 @@ export default async function BagRoute() {
             </div>
 
             <form action={checkOut}>
-              <CheckOutButton />
+              <CheckoutButton />
             </form>
           </div>
         </div>

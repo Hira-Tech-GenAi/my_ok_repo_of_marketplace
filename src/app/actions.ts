@@ -234,7 +234,8 @@ export async function checkOut() {
   let cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   if (cart && cart.items) {
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = cart.items.map((item) => ({
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = 
+    cart.items.map((item) => ({
       price_data: {
         currency: "usd",
         unit_amount: item.price * 100,

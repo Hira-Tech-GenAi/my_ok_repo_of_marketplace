@@ -71,7 +71,7 @@ export function DeleteItem() {
   );
 }
 
-export function CheckOutButton() {
+export function CheckoutButton() {
   const { pending } = useFormStatus();
   return (
     <>
