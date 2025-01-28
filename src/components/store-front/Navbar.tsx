@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import React from "react";
 import NavbarLinks from "./NavbarLinks";
@@ -65,3 +66,4 @@ export async function Navbar() {
 };
 
 export default Navbar;
+

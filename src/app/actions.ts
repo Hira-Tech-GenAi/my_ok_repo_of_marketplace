@@ -42,8 +42,7 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   });
   return redirect("/dashboard/products");
 }
-
-export async function editProduct(prevState: any, formData: FormData) {
+export async function editProduct(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   if (!user || user.email !== "hirashoaibisc@gmail.com") {
@@ -95,7 +94,7 @@ export async function deleteProduct(formData: FormData) {
   return redirect("/dashboard/products");
 }
 
-export async function createBanner(prevState: any, formData: FormData) {
+export async function createBanner(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   if (!user || user.email !== "hirashoaibisc@gmail.com") {
@@ -140,7 +139,7 @@ export async function addItem(productId: string) {
     return redirect("/");
   }
 
-  let cart: Cart | null = await redis.get(`cart-${user.id}`);
+  const cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   const selectedProduct = await prisma.product.findUnique({
     select: {
@@ -159,7 +158,7 @@ export async function addItem(productId: string) {
   }
   let myCart = {} as Cart;
 
-  if (!cart || !cart.items)  {
+  if (!cart || !cart.items) {
     myCart = {
       userId: user.id,
       items: [
@@ -197,7 +196,7 @@ export async function addItem(productId: string) {
 
   await redis.set(`cart-${user.id}`, myCart);
 
-  revalidatePath("/", "layout")
+  revalidatePath("/", "layout");
 }
 
 export async function delItem(formData: FormData) {
@@ -210,7 +209,7 @@ export async function delItem(formData: FormData) {
 
   const productId = formData.get("productId");
 
-  let cart: Cart | null = await redis.get(`cart-${user.id}`);
+  const cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   if (cart && cart.items) {
     const updateCart: Cart = {
@@ -224,46 +223,52 @@ export async function delItem(formData: FormData) {
   revalidatePath("/bag");
 }
 
- export async function checkOut() {
-   const { getUser } = getKindeServerSession();
-   const user = await getUser();
+export async function checkOut() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
 
-   if (!user) {
-     return redirect("/");
-   }
+  if (!user) {
+    return redirect("/");
+  }
 
-   let cart: Cart | null = await redis.get(`cart-${user.id}`);
+  const cart: Cart | null = await redis.get(`cart-${user.id}`);
 
-   if (cart && cart.items) {
-     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-       cart.items.map((item) => ({
-         price_data: {
-           currency: "usd",
-           unit_amount: item.price * 100,
-           product_data: {
-             name: item.name,
-             images: [item.imageString],
-           },
-         },
-         quantity: item.quantity,
-       }));
+  if (cart && cart.items) {
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      cart.items.map((item) => ({
+        price_data: {
+          currency: "usd",
+          unit_amount: item.price * 100,
+          product_data: {
+            name: item.name,
+            images: [item.imageString],
+          },
+        },
+        quantity: item.quantity,
+      }));
 
-     const session = await stripe.checkout.sessions.create({
-       mode: "payment",
-       line_items: lineItems,
-       success_url:
-         process.env.NODE_ENV === "development"
-           ? "http://localhost:3000/payment/success"
-           : "",
-       cancel_url:
-         process.env.NODE_ENV === "development"
-           ? "http://localhost:3000/payment/cancel"
-           : "/",
-       metadata: {
-         userId: user.id,
-       },
-     });
+    try {
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: lineItems,
+    success_url:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/payment/success"
+        : "/",
+    cancel_url:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/payment/cancel"
+        : "/",
+    metadata: {
+      userId: user.id,
+    },
+  });
 
-     return redirect(session.url as string);
-   }
- }
+  return redirect(session.url as string);
+} catch (error) {
+  console.error("Error creating Stripe session:", error);
+  // Optionally, redirect to an error page or return an appropriate response
+  return redirect("/payment/error");
+}
+  }
+}

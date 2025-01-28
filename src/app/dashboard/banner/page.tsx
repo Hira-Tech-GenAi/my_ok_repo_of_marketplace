@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 // import { prisma } from "@/lib/db";
-import { MoreHorizontal, PlusCircle, User2 } from "lucide-react";
+import { MoreHorizontal, PlusCircle} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
