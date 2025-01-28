@@ -139,7 +139,7 @@ export async function addItem(productId: string) {
     return redirect("/");
   }
 
-  const cart: Cart | null = await redis.get(`cart-${user.id}`);
+  let cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   const selectedProduct = await prisma.product.findUnique({
     select: {
@@ -231,44 +231,34 @@ export async function checkOut() {
     return redirect("/");
   }
 
-  const cart: Cart | null = await redis.get(`cart-${user.id}`);
+  let cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   if (cart && cart.items) {
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      cart.items.map((item) => ({
-        price_data: {
-          currency: "usd",
-          unit_amount: item.price * 100,
-          product_data: {
-            name: item.name,
-            images: [item.imageString],
-          },
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = cart.items.map((item) => ({
+      price_data: {
+        currency: "usd",
+        unit_amount: item.price * 100,
+        product_data: {
+          name: item.name,
+          images: [item.imageString],
         },
-        quantity: item.quantity,
-      }));
-
-    try {
+       
+      }, 
+      quantity: item.quantity,
+      
+    }))
+   
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
-    success_url:
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/payment/success"
-        : "/",
-    cancel_url:
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/payment/cancel"
-        : "/",
+    success_url:"http://localhost:3000/payment/success",
+    cancel_url:"http://localhost:3000/payment/cancel",
     metadata: {
       userId: user.id,
     },
+     
   });
 
   return redirect(session.url as string);
-} catch (error) {
-  console.error("Error creating Stripe session:", error);
-  // Optionally, redirect to an error page or return an appropriate response
-  return redirect("/payment/error");
-}
   }
 }
