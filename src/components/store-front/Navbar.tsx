@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import React from "react";
 import NavbarLinks from "./NavbarLinks";
@@ -18,7 +17,7 @@ export async function Navbar() {
   const user = await getUser();
 
   const cart: Cart | null = await redis.get(`cart-${user?.id}`);
-  const total = cart?.items.reduce((sum, item)=> sum +item.quantity, 0)||0;
+  const total = cart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
   return (
     <nav className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
       <div className="flex items-center ">
@@ -50,11 +49,11 @@ export async function Navbar() {
             />
           </>
         ) : (
-          <div className="hidden md:flex md:flex-1 md:justify-end md:items-center md:space-x-2">
+          <div className="flex items-center space-x-1 md:flex-row md:space-x-4 ">
             <Button variant={"ghost"} asChild>
               <LoginLink>Sign in</LoginLink>
             </Button>
-            <span className="h-6 w-px bg-gray-200"></span>
+            <span className="h-6 w-px bg-gray-200 hidden md:block"></span>
             <Button variant={"ghost"} asChild>
               <RegisterLink>Register</RegisterLink>
             </Button>
@@ -63,7 +62,6 @@ export async function Navbar() {
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
-
