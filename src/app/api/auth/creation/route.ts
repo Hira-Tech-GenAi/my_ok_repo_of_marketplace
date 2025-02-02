@@ -3,11 +3,11 @@
 import { prisma } from "@/lib/db"; //? Importing the Prisma client for database interactions
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"; // Importing Kinde server session utility
 import { NextResponse } from "next/server"; //? Importing Next.js response utility
-import {unstable_noStore as noStore} from "next/cache"
+import { unstable_noStore as noStore } from "next/cache";
 
 //? Defining the GET function for handling a GET request
 export async function GET() {
-  noStore()
+  noStore();
   const { getUser } = getKindeServerSession(); //? Retrieving the `getUser` function from the Kinde session
 
   // ? Error handling: Fetching user details from the session
