@@ -39,5 +39,9 @@ export async function GET() {
   }
 
   //? Redirecting to the home page after saving user data
-  return NextResponse.redirect("http://localhost:3000/");
+  return NextResponse.redirect(
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://my-ok-repo-of-marketplace.vercel.app/"
+  );
 }

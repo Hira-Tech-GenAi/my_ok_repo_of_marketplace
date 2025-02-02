@@ -234,32 +234,35 @@ export async function checkOut() {
   const cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   if (cart && cart.items) {
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = 
-    cart.items.map((item) => ({
-      price_data: {
-        currency: "usd",
-        unit_amount: item.price * 100,
-        product_data: {
-          name: item.name,
-          images: [item.imageString],
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      cart.items.map((item) => ({
+        price_data: {
+          currency: "usd",
+          unit_amount: item.price * 100,
+          product_data: {
+            name: item.name,
+            images: [item.imageString],
+          },
         },
-       
-      }, 
-      quantity: item.quantity,
-      
-    }))
-   
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: lineItems,
-    success_url:"http://localhost:3000/payment/success",
-    cancel_url:"http://localhost:3000/payment/cancel",
-    metadata: {
-      userId: user.id,
-    },
-     
-  });
+        quantity: item.quantity,
+      }));
 
-  return redirect(session.url as string);
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: lineItems,
+      success_url:
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3000/payment/success"
+          : "https://my-ok-repo-of-marketplace.vercel.app/payment/success",
+      cancel_url:
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3000/payment/cancel"
+          : "https://my-ok-repo-of-marketplace.vercel.app/payment/cancel",
+      metadata: {
+        userId: user.id,
+      },
+    });
+
+    return redirect(session.url as string);
   }
 }
